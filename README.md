@@ -91,7 +91,7 @@ The first one only returns the error message and the second one returns a string
 func main() {
     email, err := GetPersonEmail("123")
     if err != nil {
-        log.Error(errors.String())
+        log.Error(errors.String(err))
         println("error: "+err.Error())
     }
 
