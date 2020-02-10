@@ -111,9 +111,8 @@ And the following log is printed
 the person could not be retrieve | [err_code: not_found] | SRC: .../persons.go:17 | CAUSE: {person has not been found in the database | [err_code: not_found] | SRC: .../db.go:45}
 ```
 
-## Contact
-Matías Varela
-mtsvrl@gmail.com
+## Author
+- **Matías Varela** · [mtsvrl@gmail.com](mailto:mtsvrl@gmail.com)
 
 
 
