@@ -114,9 +114,5 @@ the person could not be retrieve | [err_code: not_found] | SRC: .../persons.go:1
 ## Author
 - **Matías Varela** · [mtsvrl@gmail.com](mailto:mtsvrl@gmail.com)
 
-
-
-
-
-
-
+## License
+[MIT](https://github.com/matiasvarela/errors/blob/master/LICENSE)
