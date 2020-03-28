@@ -10,11 +10,12 @@ var (
 )
 
 type Error struct {
-	code       string
-	message    string
-	cause      error
-	data       interface{}
-	stacktrace frame
+	code         string
+	message      string
+	causeMessage string
+	cause        error
+	data         interface{}
+	stacktrace   frame
 }
 
 func (e Error) Error() string {
@@ -27,28 +28,18 @@ func Define(code string) Error {
 }
 
 // New creates a new error.
-func New(theType Error, cause error, message string) error {
-	return newError(theType, cause, message, nil)
-}
-
-// Newf creates a new error with message formatting.
-func Newf(theType Error, cause error, message string, args ...interface{}) error {
-	return newError(theType, cause, fmt.Sprintf(message, args...), nil)
+func New(theType Error, cause error, message string, causeMessage string) error {
+	return newError(theType, cause, message, causeMessage, nil)
 }
 
 // NewWithData creates a new error with data.
-func NewWithData(theType Error, cause error, message string, data interface{}) error {
-	return newError(theType, cause, message, data)
+func NewWithData(theType Error, cause error, message string, causeMessage string, data interface{}) error {
+	return newError(theType, cause, message, causeMessage, data)
 }
 
 // Wrap wraps an error with a message.
 func Wrap(e error, message string) error {
 	return wrap(e, message, nil)
-}
-
-// Wrapf wraps an error with a formatting message.
-func Wrapf(e error, message string, args ...interface{}) error {
-	return wrap(e, fmt.Sprintf(message, args...), nil)
 }
 
 // WrapWithData wraps an error and add extra data
@@ -86,6 +77,24 @@ func Data(e error) interface{} {
 	return nil
 }
 
+// Cause retrieves the cause of the given error
+func Cause(e error) error {
+	if err, ok := e.(Error); ok {
+		return err.cause
+	}
+
+	return nil
+}
+
+// CauseMessage retrieves the cause message of the given error
+func CauseMessage(e error) string {
+	if err, ok := e.(Error); ok {
+		return err.causeMessage
+	}
+
+	return ""
+}
+
 // String returns an string containing all the subyascent information about the given error.
 func String(e error) string {
 	if e == nil {
@@ -94,7 +103,7 @@ func String(e error) string {
 
 	if err, ok := e.(Error); ok {
 		r := err.message + " | [err_code: " + err.code + "]"
-
+		r = err.message + " | [cause_msg: " + err.causeMessage + "]"
 		r = fmt.Sprintf("%v | SRC: %v:%v", r, err.stacktrace.file(), err.stacktrace.line())
 
 		if err.cause != nil {
@@ -107,13 +116,13 @@ func String(e error) string {
 	return e.Error()
 }
 
-func newError(theType Error, cause error, message string, data interface{}) error {
-	return Error{code: theType.code, message: message, cause: cause, data: data, stacktrace: stackLevel(2)}
+func newError(theType Error, cause error, message string, causeMessage string, data interface{}) error {
+	return Error{code: theType.code, message: message, causeMessage: causeMessage, cause: cause, data: data, stacktrace: stackLevel(2)}
 }
 
 func wrap(e error, message string, data interface{}) error {
 	if err, ok := e.(Error); ok {
-		return Error{code: err.code, message: message, cause: e, data: data, stacktrace: stackLevel(2)}
+		return Error{code: err.code, message: message, causeMessage: err.causeMessage, cause: e, data: data, stacktrace: stackLevel(2)}
 	}
 
 	return Error{code: DefaultError.code, message: message, cause: e, data: data, stacktrace: stackLevel(2)}
